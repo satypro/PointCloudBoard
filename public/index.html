@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>!!! WebGL - Point Cloud Visualization Board !!!</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+			<!-- Content here -->
+			<div class="col-2" style="background-color : #2194ff">
+					<span style="margin-left: 30px; text-decoration-style: unset; color: mintcream">Control Panel</span><br/><br/>
+
+					<span style="margin-left:10px; margin-top:20px; color: mintcream">Geomterical Class</span>
+					<select class="form-control form-control-sm" id="geomteryClassification" style="margin-bottom : 5px">
+						<option value="0">Surface</option>
+						<option value="2">Lines</option>
+						<option value="3">Points</option>
+					</select>
+					
+					<span style="margin-left:10px; color: mintcream">Semantic Class</span>
+					<select class="form-control form-control-sm" id="semanticClassification">
+						<option value="0">Powerline</option>
+						<option value="1">Low vegetation</option>
+						<option value="2">Impervious Surfaces</option>
+						<option value="3">Car</option>
+						<option value="4">Fence/Hedge</option>
+						<option value="5">Roof</option>
+						<option value="6">Surface</option>
+						<option value="7">Shrub</option>
+						<option value="8">Tree</option>
+					</select>
+
+					<span style="margin-left:10px; color: mintcream">Point Type</span>
+					<select class="form-control form-control-sm" style="margin-bottom : 5px">
+						<option value="1">Square</option>
+						<option value="2">Circle</option>
+					</select>
+			</div>
+
+			<div class="col-9" id="canvas-container" style="border:1px solid black;">
+				<!-- This is the place holder for rendering the Point Cloud Board for Visualization-->
+			</div>
+
+			<div class="col-1" style="background-color : lightblue">
+				<p>Stats</p>
+			</div>
+			
+			</div>
+		</div>
+
+		<script src="build/three.js"></script>
+		<script src="js/TrackballControls.js"></script>
+        <script src="js/WebGL.js"></script>
+		<script src="data/data.js"></script>	
+		<script src="data/semantic.js"></script>
+		<script src="data/pointclass.js"></script>	
+		<script src="js/ColorMaps.js"></script>
+		<script src="js/PointCloudEngine.js"></script>
+		<script src="js/Interactions.js"></script>
+		
+	</body>
+</html>

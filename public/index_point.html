@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>!!! WebGL - Point Cloud Visualization !!!</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+		<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+		<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.11/lodash.min.js"></script>
+	</head>
+	<body>
+		<div class="container-fluid">
+			<div class="row">
+			<!-- Content here -->
+			<div class="col-2" style="background-color : #2194ff">
+					<span style="margin-left: 30px; text-decoration-style: unset; color: mintcream">Controll Panel</span><br/><br/>
+
+					<span style="margin-left:10px; margin-top:20px; color: mintcream">Geomterical Classification</span>
+					<select class="form-control form-control-sm" id="geomteryClassification" style="margin-bottom : 5px">
+						<option value="0">Surface</option>
+						<option value="2">Lines</option>
+						<option value="3">Points</option>
+					</select>
+					
+					<span style="margin-left:10px; color: mintcream">Point Type</span>
+					<select class="form-control form-control-sm" style="margin-bottom : 5px">
+						<option value="1">Square</option>
+						<option value="2">Circle</option>
+					</select>
+
+					<span style="margin-left:10px; color: mintcream">Semantic Class</span>
+					<select class="form-control form-control-sm" id="semanticClassification">
+						<option value="0">Powerline</option>
+						<option value="1">Low vegetation</option>
+						<option value="2">Impervious Surfaces</option>
+						<option value="3">Car</option>
+						<option value="4">Fence/Hedge</option>
+						<option value="5">Roof</option>
+						<option value="6">Surface</option>
+						<option value="7">Shrub</option>
+						<option value="8">Tree</option>
+					</select>
+			</div>
+
+			<div class="col-9" id="canvas-container" style="border:1px solid black;">
+
+			</div>
+
+			<div class="col-1" style="background-color : lightblue">
+				<p>Stats</p>
+			</div>
+			
+			</div>
+		</div>
+
+		<script src="build/three.js"></script>
+		<script src="js/TrackballControls.js"></script>
+        <script src="js/WebGL.js"></script>
+		<script src="data/data.js"></script>	
+		<script src="data/semantic.js"></script>	
+		<script src="data/pointclass.js"></script>
+		
+		<script>
+
+			function GetGeometryColorMap(code)
+			{
+				var colorMap =
+				{
+					Surface :
+					{
+						Code : 0,
+						R : 255,
+						G : 0,
+						B : 0,
+						color : "rgb(255,0,0)"
+					},
+					Line :
+					{
+						Code : 2,
+						R : 0,
+						G : 0,
+						B : 255,
+						color : "rgb(0,0,255)"
+					},
+					Point :
+					{
+						Code : 3,
+						R : 0,
+						G : 255,
+						B : 0,
+						color : "rgb(0,255,0)"
+					}
+				};
+
+				switch(code)
+				{
+					case 0 : return colorMap.Surface;
+					case 2 : return colorMap.Line;
+					case 3 : return colorMap.Point;
+					default : return colorMap.Point;
+				}
+			}
+
+
+			function GetSemanticColorMap(code)
+			{
+				var colorMap = 
+				{
+					PowerLine : 
+					{
+						Code : 0,
+						R : 255,
+						G : 255,
+						B : 125,
+						color : "rgb(255,255,125)"
+					},
+					Lowvegetation : 
+					{
+						Code : 1,
+						R : 0,
+						G : 255,
+						B : 255,
+						color : "rgb(0,255,255)"
+					},
+					Impervioussurfaces : 
+					{
+						Code : 2,
+						R : 255,
+						G : 255,
+						B : 255,
+						color : "rgb(255,255,255)"
+					},
+					Car : 
+					{
+						Code : 3,
+						R : 255,
+						G : 255,
+						B : 0,
+						color : "rgb(255,255,0)"
+					},
+					FenceHedge : 
+					{
+						Code : 4,
+						R : 0,
+						G : 255,
+						B : 125,
+						color : "rgb(0,255,125)"
+					},
+					Roof: 
+					{
+						Code : 5,
+						R : 0,
+						G : 0,
+						B : 255,
+						color : "rgb(0,0,255)"
+					},
+					Facade: 
+					{
+						Code : 6,
+						R : 0,
+						G : 125,
+						B : 255,
+						color : "rgb(0,125,255)"
+					},
+					Shrub: 
+					{
+						Code : 7,
+						R : 125,
+						G : 255,
+						B : 0,
+						color : "rgb(125,255,0)"
+					},
+					Tree: 
+					{
+						Code : 8,
+						R : 0,
+						G : 255,
+						B : 0,
+						color : "rgb(0,255,0)"
+					}
+				};
+
+				switch(code)
+				{
+					case 0 : return colorMap.PowerLine;
+					case 1 : return colorMap.Lowvegetation;
+					case 2 : return colorMap.Impervioussurfaces;
+					case 3 : return colorMap.Car;
+					case 4 : return colorMap.FenceHedge;
+					case 5 : return colorMap.Roof;
+					case 6 : return colorMap.Facade;
+					case 7 : return colorMap.Shrub;
+					case 8 : return colorMap.Tree;
+					default : return colorMap.Impervioussurfaces;
+				}
+			}
+
+
+			if ( WEBGL.isWebGLAvailable() === false ) 
+			{
+				document.body.appendChild( WEBGL.getWebGLErrorMessage() );
+			}
+
+			var camera, 
+				controls, 
+				scene, 
+				renderer, 
+				stats,
+				geometry,
+				particles;
+
+			init();
+			animate();
+
+			function init() 
+			{
+				var canvasContainer = document.getElementById( 'canvas-container' );
+				// renderer
+				var width = canvasContainer.offsetWidth - 20;
+				var height = window.innerHeight - 20; //canvasContainer.offsetHeight;
+
+				camera = new THREE.PerspectiveCamera( 100, width / height, 1, 2000 );
+				camera.position.z = 100;
+				camera.position.x = 0;
+				camera.position.y = 0;
+				
+				controls = new THREE.TrackballControls(camera, canvasContainer);
+				controls.rotateSpeed = 2.0;
+				controls.zoomSpeed = 1.2;
+				controls.panSpeed = 0.6;
+				controls.noZoom = false;
+				controls.noPan = false;
+				controls.staticMoving = false;
+				controls.dynamicDampingFactor = 0.3;
+				controls.keys = [ 65, 83, 68 ];
+				controls.addEventListener( 'change', render );
+
+				geometry = new THREE.Geometry(); 
+				/*var positions = new Float32Array( 500000 * 3 ); // 3 vertices per point
+				geometry.addAttribute( 'position', new THREE.BufferAttribute( positions, 3 ) );
+				geometry.setDrawRange( 0,  Math.ceil(pclData.length/2) );
+				*/
+				var colors = [];
+				var color;
+
+                for (i = 0; i < pclData.length/2; i++) 
+                {
+                    var vertex = new THREE.Vector3();
+                    vertex.x = pclData[i][0] * 50;
+                    vertex.y = pclData[i][1] * 50;
+                    vertex.z = pclData[i][2] * 50;
+
+					var intensity = ( 0.1 ) * 7;
+
+					color = new THREE.Color( 0,0,0);
+					geometry.vertices.push(vertex);
+					colors[i] = ( color.clone().multiplyScalar( intensity ) );
+                }
+				geometry.colors = colors;
+
+				var materials = new THREE
+					.PointCloudMaterial( 
+						{ 
+							size: 0.02, 
+							vertexColors: THREE.VertexColors 
+					});
+
+				particles = new THREE
+					.PointCloud(geometry, materials);
+					
+				// Experiment to put pivot and set the position of the point cloud rendering 
+				particles.position.set(-80, -40, 0);
+				particles.rotation.set(0, 0, 0);
+
+				// world
+				scene = new THREE.Scene();
+				scene.background = new THREE.Color(0xffffff);
+				scene.fog = new THREE.FogExp2( 0xcccccc, 0.002 );
+				scene.add(particles);
+
+				renderer = new THREE.WebGLRenderer( { antialias: true } );
+				renderer.setPixelRatio(1);
+				renderer.setSize(width, height);
+				
+				canvasContainer.appendChild( renderer.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+				render();
+			}
+
+			function onWindowResize() 
+			{
+				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.updateProjectionMatrix();
+				renderer.setSize( window.innerWidth, window.innerHeight );
+				controls.handleResize();
+				render();
+			}
+
+			function animate() 
+			{
+				requestAnimationFrame( animate );	
+				controls.update();
+				//stats.update();
+			}
+
+			function render() 
+			{
+				renderer.render( scene, camera );
+			}
+		</script>
+		<script>
+			$(document).ready(function()
+			{
+				$("#LoadPoints").on('change', function(e)
+				{
+					if (pclData.length > particles.geometry.vertices.length)
+					{
+						for(i = Math.ceil(pclData.length/2); i < pclData.length; i++)
+						{
+							var vertex = new THREE.Vector3();
+							vertex.x = pclData[i][0] * 50;
+							vertex.y = pclData[i][1] * 50;
+							vertex.z = pclData[i][2] * 50;
+							particles.geometry.vertices.push(vertex);
+							particles.geometry.colors[i] = new THREE.Color("rgb(255,0,0)");
+						}
+
+						particles.geometry.verticesNeedUpdate  = true;
+						particles.geometry.colorsNeedUpdate = true;
+						particles.geometry.elementsNeedUpdate = true;
+
+						render();
+					}
+				});
+
+				$("#semanticClassification").on('change', function(e)
+				{
+					var val = $('#semanticClassification').val();
+
+					console.log(geometry.colors.length);
+
+					var semanticMap = GetSemanticColorMap(parseInt(val));
+
+					for(i = 0; i < geometry.colors.length; i++)
+					{
+						if (semanticMap.Code == semantic[i])
+						{
+							geometry.colors[i] = new THREE.Color(semanticMap.color);
+						}
+						else
+						{
+							geometry.colors[i] = new THREE.Color("rgb(0,0,0)");
+						}
+					}
+					geometry.colorsNeedUpdate = true;
+
+					render();
+				});
+
+
+				$("#geomteryClassification").on('change', function(e)
+				{
+					var val = $('#geomteryClassification').val();
+					var pointClassMap = GetGeometryColorMap(parseInt(val));
+
+					for(i = 0; i < geometry.colors.length; i++)
+					{
+						if (pointClassMap.Code == pointclass[i])
+						{
+							geometry.colors[i] = new THREE.Color(pointClassMap.color);
+						}
+						else
+						{
+							geometry.colors[i] = new THREE.Color("rgb(0,0,0)");
+						}
+					}
+					geometry.colorsNeedUpdate = true;
+
+					render();
+				});
+			});
+		</script>
+	</body>
+</html>
