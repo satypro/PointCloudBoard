@@ -2,21 +2,21 @@ $(document).ready(function()
 			{
 				$("#LoanExtraPointCloud").on('change', function(e)
 				{
-					if (pclData.length > particles.geometry.drawRange.count)
+					if (cloudPoints.length > particles.geometry.drawRange.count)
 					{
-						particles.geometry.setDrawRange( 0, pclData.length);
+						particles.geometry.setDrawRange( 0, cloudPoints.length);
 
 						var positions = particles.geometry.attributes.position.array;
 						var colors = particles.geometry.attributes.color.array;
 
 						var currentPoints = Math.floor(totalPoints);
-						totalPoints = pclData.length;
+						totalPoints = cloudPoints.length;
 
 						for(i = currentPoints; i < totalPoints; i++)
 						{
-							positions[i * 3] =  pclData[i][0] * 50;
-							positions[i * 3 + 1] =  pclData[i][1] * 50;
-							positions[i * 3 + 2] =  pclData[i][2] * 50;
+							positions[i * 3] =  cloudPoints[i][0] * 50;
+							positions[i * 3 + 1] =  cloudPoints[i][1] * 50;
+							positions[i * 3 + 2] =  cloudPoints[i][2] * 50;
 
 							colors[i * 3] = 255;
 							colors[i * 3 + 1 ] = 0;
@@ -80,5 +80,7 @@ $(document).ready(function()
 					particles.geometry.attributes.color.needsUpdate = true;
 
 					render();
-				});
+                });
+                
+                loadCloud();
 			});
