@@ -4,4 +4,8 @@ and request for furthure contribution.
 
 To Run :
 
+npm install
 npm start 
+
+Open in Browser :
+http://localhost:3000
