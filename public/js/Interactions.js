@@ -1,5 +1,26 @@
 $(document).ready(function()
 			{
+				$("#pointType").on('change', function(e)
+				{
+					var val = $('#pointType').val();
+
+					if (val == 2)
+					{
+						var sprite = new THREE.TextureLoader().load('textures/sprites/disc.png');
+						particles.material.map = sprite;
+						//particles.material.color.setHSL( 1.0, 0.3, 0.7 );
+						particles.material.needsUpdate = true;
+						particles.material.alphaTest = 0.09;
+						//particles.material.transparent = true;
+					}
+					if (val == 1)
+					{
+						particles.material.map = null;
+						particles.material.needsUpdate = true;
+					}
+
+					render();
+				});
 				$("#LoanExtraPointCloud").on('change', function(e)
 				{
 					if (cloudPoints.length > particles.geometry.drawRange.count)
@@ -77,10 +98,26 @@ $(document).ready(function()
 						}
 					}
 
+					
 					particles.geometry.attributes.color.needsUpdate = true;
 
 					render();
-                });
-                
+				});
+				
+				$("#pointSize").change(function()
+				{	
+					var val = $('#pointSize').val();
+					$('#pointSizeValue').text(val);
+					particles.material.size = val;
+					render();
+				});
+
+				$("#pointBudget").change(function()
+				{	
+					var val = $('#pointBudget').val();
+					$('#pointBudgetValue').text(val);
+					render();
+				});
+				
                 loadCloud();
 			});
